@@ -541,9 +541,11 @@
     `;
   }
 
-  // 完全勝利画面
+// 完全勝利画面
   function showVictory() {
-    stopAudio(bgmGame);
+    // stopAudio(bgmGame);  <-- 修正前: ここを削除またはコメントアウトし...
+    switchToTitleBgm();  // <-- 修正後: これに置き換えます。これでタイトルBGMが流れます。
+    
     pulse([100, 50, 100, 50, 100, 50, 500]);
     
     overlay.classList.add("victory");
@@ -552,7 +554,6 @@
     backToStartBtn.style.display = 'none';
     memoContent.style.display = 'none';
     resultContent.style.display = 'block';
-
     resultContent.innerHTML = `
         <h2>CONTRACT FULFILLED</h2>
         <p>契約完了。貴様の勝ちだ。<br>
