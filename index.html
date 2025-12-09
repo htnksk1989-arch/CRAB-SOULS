@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <meta property="og:title" content="CRAB & CLICK：殻むき地獄" />
-  <meta property="og:description" content="10秒記憶、即実践。こんなゲームにマジになってどうするの？" />
+  <meta property="og:description" content="10秒記憶、即実践。ただひたすらに、カニを剥け。" />
   <meta property="og:type" content="website" />
 
   <title>CRAB & CLICK</title>
@@ -341,8 +341,7 @@
             ※本番：10秒強制開始<br>
             　敗北条件：<strong>累計5死</strong><br>
             　勝利条件：<strong>累計3クリア</strong><br>
-            ※練習：無制限 (手動開始)<br><br>
-            <span style="font-size:11px; color:#888;">「こんなゲームにマジになってどうするの？」</span>
+            ※練習：無制限 (手動開始)
         </p>
       </div>
       <div class="start-buttons">
@@ -366,7 +365,7 @@
             <div class="value" id="streak">0</div>
           </div>
           <div class="card">
-            <div class="label">当然の結果 (死)</div>
+            <div class="label">累計死亡数</div>
             <div class="value" id="deaths">0</div>
           </div>
         </div>
@@ -425,10 +424,10 @@
   const gameScreen = document.getElementById("gameScreen");
   const board = document.getElementById("board");
   const overlay = document.getElementById("overlay");
-  const memoContent = document.getElementById("memoContent"); // ★追加
-  const resultContent = document.getElementById("resultContent"); // ★追加
-  const memoTimerDisp = document.getElementById("memoTimer"); // ★直接取得
-  const manualStartBtn = document.getElementById("manualStartBtn"); // ★直接取得
+  const memoContent = document.getElementById("memoContent");
+  const resultContent = document.getElementById("resultContent");
+  const memoTimerDisp = document.getElementById("memoTimer");
+  const manualStartBtn = document.getElementById("manualStartBtn");
 
   const toast = document.getElementById("toast");
   const backToStartBtn = document.getElementById("backToStartBtn");
@@ -446,7 +445,7 @@
   };
   els.total.textContent = PIECES;
 
-  // ====== Messages (皮肉バージョン) ======
+  // ====== Messages ======
   const msg = {
     success: ["せいぜい頑張れ。", "運がいいだけだ。", "調子に乗るなよ。"],
     fail: ["ほら見たことか。", "カニ以下の知能。", "葬式は出してやる。"],
@@ -481,9 +480,11 @@
     clearTimeout(showToast.timer);
     showToast.timer = setTimeout(() => toast.classList.remove("show"), duration);
   }
+  
+  // ★修正: 死亡数の表示を「累計(totalDeaths)」に変更
   function updateStats(){
     els.progress.textContent = nextIndex;
-    els.deaths.textContent = deaths;
+    els.deaths.textContent = totalDeaths; // ここを修正
     els.streak.textContent = streak;
   }
 
@@ -507,8 +508,8 @@
     overlay.classList.remove("fadeout");
     overlay.style.display = 'flex';
     backToStartBtn.style.display = 'none';
-    memoContent.style.display = 'none'; // 記憶画面を隠す
-    resultContent.style.display = 'block'; // 結果画面を表示
+    memoContent.style.display = 'none';
+    resultContent.style.display = 'block';
 
     resultContent.innerHTML = `
         <h2>YOU DIED</h2>
@@ -588,16 +589,18 @@
     const id = parseInt(piece.dataset.id);
     const expected = order[nextIndex];
     if(id === expected){
+      // 正解
       pulse(8); piece.classList.add("ok"); nextIndex++; streak++; updateStats();
       
       if(nextIndex >= PIECES){
+        // クリア
         totalClears++;
         if(mode === "HARD" && totalClears >= REQUIRED_TOTAL_CLEARS){
             showVictory();
         } else {
             pulse([50, 50, 50]);
             let clearMsg = pick(msg.clear);
-            if(mode === "HARD") clearMsg += ` (${totalClears}/${REQUIRED_TOTAL_CLEARS})`;
+            if(mode === "HARD") clearMsg += ` (累計クリア: ${totalClears})`;
             showToast(clearMsg, 3000);
             endGame(true);
         }
@@ -605,10 +608,12 @@
         if(mode === "HARD" && nextIndex > 0 && nextIndex % 3 === 0) showToast(pick(msg.success), 800);
       }
     } else {
+      // 不正解
       pulse(100); piece.classList.add("bad"); deaths++; streak = 0; updateStats();
 
       if(mode === "HARD") {
-          totalDeaths++;
+          totalDeaths++; // 累計死亡を加算
+          updateStats(); // 即座に表示反映
           if(totalDeaths >= MAX_TOTAL_DEATHS) {
               showGameOver();
               return;
@@ -630,8 +635,8 @@
     overlay.style.display = 'flex';
     backToStartBtn.style.display = 'block';
     
-    memoContent.style.display = 'block'; // 記憶画面を表示
-    resultContent.style.display = 'none'; // 結果画面を隠す
+    memoContent.style.display = 'block';
+    resultContent.style.display = 'none';
 
     memoTimerDisp.textContent = timeLeftText;
     manualStartBtn.style.display = showManualBtn ? 'block' : 'none';
@@ -680,7 +685,6 @@
   document.getElementById("startPracticeBtn").onclick = () => startGame("PRACTICE");
   backToStartBtn.onclick = () => showStartScreen();
   
-  // ★修正: 手動ボタンのイベントリスナーをここで登録
   manualStartBtn.onclick = () => finishMemorize();
 
   document.body.addEventListener('touchmove', function(e) {
