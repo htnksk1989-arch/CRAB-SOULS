@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="ja" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0e1116" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <meta property="og:title" content="CRAB & CLICK：殻むき地獄" />
+  <meta property="og:description" content="10秒記憶、即実践。カニを食べるための指先能力テスト。" />
+  <meta property="og:type" content="website" />
+
+  <title>CRAB & CLICK</title>
+  <style>
+    :root{
+      --bg:#0e1116;
+      --panel:rgba(21, 26, 34, 0.9);
+      --text:#e6e6e6;
+      --muted:#9aa4b2;
+      --accent:#7bdcff;
+      --danger:#ff6b6b;
+    }
+
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at 50% -20%, #2a3345, var(--bg) 60%);
+      color:var(--text);
+      height: 100vh;
+      height: 100dvh;
+      display:flex;
+      flex-direction: column;
+      align-items:center;
+      justify-content:center;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
+    }
+
+    .wrap{
+      width:min(980px, 94vw);
+      height: min(800px, 96dvh);
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      gap:16px;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 820px){
+      .wrap{
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        height: 100dvh;
+        gap: 10px;
+        padding: 10px;
+        padding-top: max(10px, env(safe-area-inset-top));
+        padding-bottom: max(10px, env(safe-area-inset-bottom));
+      }
+    }
+
+    /* 左パネル */
+    .side{
+      background: var(--panel);
+      border:1px solid rgba(255, 255, 255, 0.08);
+      border-radius:16px;
+      padding:16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    @media (max-width: 820px){
+      .side{
+        padding: 10px 12px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 60px;
+      }
+      .side > * { width: auto; margin: 0; }
+      .title-group { flex: 1; min-width: 140px; }
+      .btn-group { display: flex; gap: 8px; }
+      .stat { 
+        display: flex; 
+        gap: 4px; 
+        flex: 1 1 100%; 
+        justify-content: space-between; 
+        margin-top: 4px !important; 
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 6px;
+      }
+      .card { flex: 1; text-align: center; padding: 2px 4px; background: none; border: none; }
+      .rule, .sub { display: none; }
+      h1 { font-size: 16px; margin: 0; }
+    }
+
+    h1{
+      font-size:22px;
+      margin:0 0 8px 0;
+      letter-spacing:.05em;
+      background: linear-gradient(to right, #fff, #99a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sub{ color:var(--muted); font-size:12px; line-height:1.4; margin-bottom:16px; }
+
+    .btn{
+      width:100%;
+      appearance:none;
+      border:1px solid rgba(123, 220, 255, 0.2);
+      background: linear-gradient(180deg, #1b2433, #131a26);
+      color:var(--text);
+      padding:12px;
+      border-radius:8px;
+      font-weight:700;
+      font-size: 13px;
+      cursor:pointer;
+      touch-action: manipulation;
+    }
+    .btn:active{ transform: scale(0.96); opacity: 0.9; }
+    .btn.primary {
+      border-color: rgba(123, 220, 255, 0.4);
+      background: linear-gradient(180deg, #2a3b55, #1a2433);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .btn.secondary{ margin-top:8px; color:var(--muted); background: transparent; border-color: rgba(255,255,255,0.1); }
+    @media (max-width: 820px){ .btn.secondary { margin-top: 0; } }
+
+    .stat{ display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:auto; }
+    .card{ background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:8px 10px; }
+    .label{ font-size:9px; color:var(--muted); text-transform: uppercase; }
+    .value{ font-size:16px; font-weight:700; font-variant-numeric: tabular-nums; }
+
+    /* メインエリア */
+    .main{
+      background: var(--panel);
+      border:1px solid rgba(255, 255, 255, 0.08);
+      border-radius:16px;
+      position:relative;
+      overflow:hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .board{
+      position:relative;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    /* ピース */
+    .piece{
+      position:absolute;
+      width: 96px;
+      height: 72px;
+      border-radius:10px;
+      background: linear-gradient(135deg, #242e3f, #151b26);
+      border:1px solid rgba(120,130,150,0.25);
+      display:flex;
+      align-items:center;
+      justify-content:center; /* 中央揃え */
+      gap:0;
+      cursor:pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 10;
+      transform: translate3d(0,0,0);
+      transition: transform 0.1s;
+    }
+    @media (max-width: 600px){
+        .piece { width: 80px; height: 60px; border-radius: 8px; }
+    }
+
+    .piece:active{ transform: scale(0.92) translate3d(0,0,0); }
+    
+    /* 画像 */
+    .crab-img { width: 40px; height: 40px; object-fit: contain; pointer-events: none; }
+    .crab-fallback { font-size: 32px; line-height: 1; display: none; pointer-events: none; }
+    .img-error .crab-img { display: none; }
+    .img-error .crab-fallback { display: block; }
+
+    /* 番号スタイル */
+    .num{
+      font-size:24px; /* 少し大きくしました */
+      font-weight:900; 
+      color:var(--accent); 
+      margin-left:2px;
+      text-shadow: 0 0 10px rgba(123,220,255,0.5); 
+      pointer-events: none;
+      /* カニと数字を少し重ねるための調整 */
+      position: relative;
+      z-index: 2;
+    }
+    .hidden .num{ opacity: 0; }
+
+    .ok{
+      border-color: var(--accent) !important;
+      background: rgba(123, 220, 255, 0.1);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .bad{
+      border-color: var(--danger) !important;
+      background: rgba(255, 107, 107, 0.2);
+      animation: shake .2s linear 2;
+    }
+    @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+    /* オーバーレイ */
+    .overlay{
+      position:absolute; inset:0;
+      background: rgba(10, 14, 22, 0.9);
+      display:flex; flex-direction: column;
+      align-items:center; justify-content:center;
+      text-align:center; padding:20px; z-index: 100;
+      transition: opacity 0.3s;
+    }
+    .overlay.fadeout { opacity: 0; pointer-events: none; }
+
+    /* トースト */
+    .toast{
+      position:absolute; bottom:30px; left:50%; transform: translateX(-50%) translateY(20px);
+      background:rgba(20, 25, 35, 0.95);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:30px; padding:10px 24px;
+      font-size:13px; font-weight: 600; color:var(--text); white-space: nowrap;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      z-index: 200; pointer-events: none; opacity: 0;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast strong { color: var(--accent); }
+
+    /* 早食いボタン */
+    #skipBtn {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      padding: 12px 30px;
+      background: rgba(123, 220, 255, 0.1);
+      border: 1px solid rgba(123, 220, 255, 0.4);
+      color: var(--accent); border-radius: 24px;
+      font-weight: bold; font-size: 14px;
+      cursor: pointer; backdrop-filter: blur(4px);
+      z-index: 50; display: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      touch-action: manipulation;
+    }
+    #skipBtn:active { transform: translateX(-50%) scale(0.95); background: rgba(123, 220, 255, 0.2); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="side">
+      <div class="title-group">
+        <h1>🦀 CRAB & CLICK</h1>
+        <div class="sub">
+          これは「カニを食べる」模擬試験。<br/>
+          数字を記憶し、順に殻を剥け。
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn primary" id="startBtn">開始</button>
+        <button class="btn secondary" id="practiceBtn">練習</button>
+      </div>
+
+      <div class="stat">
+        <div class="card">
+          <div class="label">進捗</div>
+          <div class="value"><span id="progress">0</span>/<span id="total">9</span></div>
+        </div>
+        <div class="card">
+          <div class="label">連鎖</div>
+          <div class="value" id="streak">0</div>
+        </div>
+        <div class="card">
+          <div class="label">死亡</div>
+          <div class="value" id="deaths">0</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="main">
+      <div class="board hidden" id="board"></div>
+      <button id="skipBtn">早食い（準備完了）</button>
+
+      <div class="overlay" id="overlay">
+        <div>
+          <h2>可食部は少ない。<br>試練は多い。</h2>
+          <p style="font-size:12px; color:#889;">
+            10秒の記憶タイムの後、番号が消えます。<br>
+            1から順にタップしてください。
+          </p>
+        </div>
+      </div>
+      <div class="toast" id="toast"></div>
+    </section>
+  </div>
+
+<script>
+(() => {
+  // ====== Config ======
+  const PIECES = 9;
+  const MEMO_MS = 10000;
+  // 画像ファイル名 (同じフォルダに置いてください)
+  const CRAB_IMAGES = [
+    "crab1.png", "crab2.png", "crab3.png",
+    "crab4.png", "crab5.png", "crab6.png", 
+    "crab7.png", "crab8.png", "crab9.png"
+  ];
+
+  // ====== State ======
+  let order = [];
+  let nextIndex = 0;
+  let deaths = 0;
+  let streak = 0;
+  let mode = "-";
+  let isLocked = false;
+  let timerId = null;
+
+  // ====== UI Refs ======
+  const board = document.getElementById("board");
+  const overlay = document.getElementById("overlay");
+  const toast = document.getElementById("toast");
+  const skipBtn = document.getElementById("skipBtn");
+  const els = {
+    progress: document.getElementById("progress"),
+    total: document.getElementById("total"),
+    deaths: document.getElementById("deaths"),
+    streak: document.getElementById("streak"),
+  };
+  els.total.textContent = PIECES;
+
+  // ====== Messages ======
+  const msg = {
+    success: [
+      "努力は尊い。<strong>可食部は別問題</strong>。",
+      "正確さは信用。<strong>満腹は運</strong>。",
+      "あなたの集中が、<strong>単価を正当化する</strong>。",
+      "丁寧さが光る。<strong>報酬は薄い</strong>。",
+      "いい調子。<strong>殻もいい調子</strong>。",
+    ],
+    fail: [
+      "殻の勝ち。",
+      "惜しい。<strong>現実はもっと硬い</strong>。",
+      "希望はある。<strong>身はない</strong>。",
+      "ミスは一瞬。<strong>やり直しは伝統</strong>。",
+    ],
+    clear: [
+      "完璧だ。<strong>だが可食部は少ない</strong>。",
+      "あなたは勝った。<strong>沈黙に光が差した</strong>。",
+      "この勝利が、<strong>価格を肯定する</strong>。",
+    ]
+  };
+
+  // ====== Core Logic ======
+  
+  function pulse(pattern = 10) {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(pattern);
+    }
+  }
+
+  function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function showToast(html, duration = 1500){
+    toast.innerHTML = html;
+    toast.classList.add("show");
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => {
+      toast.classList.remove("show");
+    }, duration);
+  }
+
+  function updateStats(){
+    els.progress.textContent = nextIndex;
+    els.deaths.textContent = deaths;
+    els.streak.textContent = streak;
+  }
+
+  function setupBoard(){
+    board.innerHTML = "";
+    board.classList.remove("hidden");
+    
+    // レイアウト計算
+    const w = board.clientWidth;
+    const h = board.clientHeight;
+    // モバイル判定
+    const isMobile = w < 600;
+    const pW = isMobile ? 80 : 96;
+    const pH = isMobile ? 60 : 72;
+    
+    const cols = 3; 
+    const rows = 3;
+    const cellW = w / cols;
+    const cellH = h / rows;
+
+    // シャッフル
+    order = Array.from({length: PIECES}, (_, i) => i);
+    for(let i = order.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+
+    // ピース配置
+    for(let i = 0; i < PIECES; i++){
+      const piece = document.createElement("div");
+      piece.className = "piece";
+      piece.dataset.id = i;
+
+      const imgSrc = CRAB_IMAGES[i % CRAB_IMAGES.length];
+      
+      // ★修正: シンプルに画像と数字のみを表示
+      piece.innerHTML = `
+        <img src="${imgSrc}" class="crab-img" onerror="this.parentElement.classList.add('img-error')" alt="crab">
+        <span class="crab-fallback">🦀</span>
+        <span class="num">${order.indexOf(i) + 1}</span>
+      `;
+
+      const c = i % cols;
+      const r = Math.floor(i / cols);
+      
+      const jitterX = (Math.random() - 0.5) * (cellW * 0.3);
+      const jitterY = (Math.random() - 0.5) * (cellH * 0.3);
+      
+      const x = (c * cellW) + (cellW - pW)/2 + jitterX;
+      const y = (r * cellH) + (cellH - pH)/2 + jitterY;
+
+      const safeX = Math.max(8, Math.min(w - pW - 8, x));
+      const safeY = Math.max(8, Math.min(h - pH - 8, y));
+
+      piece.style.left = `${safeX}px`;
+      piece.style.top = `${safeY}px`;
+
+      piece.onpointerdown = (e) => {
+        e.stopPropagation();
+        handlePieceClick(piece);
+      };
+
+      board.appendChild(piece);
+    }
+  }
+
+  function handlePieceClick(piece){
+    if(isLocked) return;
+    if(piece.classList.contains("ok")) return;
+    checkAnswer(piece);
+  }
+
+  function checkAnswer(piece){
+    const id = parseInt(piece.dataset.id);
+    const expected = order[nextIndex];
+
+    if(id === expected){
+      // 正解
+      pulse(8); 
+      piece.classList.add("ok");
+      nextIndex++;
+      streak++;
+      updateStats();
+
+      if(nextIndex >= PIECES){
+        // クリア
+        pulse([50, 50, 50]);
+        showToast(pick(msg.clear), 3000);
+        endGame(true);
+      } else {
+        // 継続
+        if(mode === "HARD" && nextIndex > 0 && nextIndex % 3 === 0){
+           showToast(pick(msg.success), 800);
+        }
+      }
+    } else {
+      // 失敗
+      pulse(100); 
+      piece.classList.add("bad");
+      deaths++;
+      streak = 0;
+      updateStats();
+      showToast(pick(msg.fail), 2000);
+      endGame(false);
+    }
+  }
+
+  function endGame(cleared){
+    isLocked = true;
+    setTimeout(() => {
+      startGame(mode);
+    }, cleared ? 2500 : 1500);
+  }
+
+  function startGame(selectedMode){
+    mode = selectedMode;
+    nextIndex = 0;
+    isLocked = true;
+    updateStats();
+
+    overlay.classList.add("fadeout");
+    setTimeout(() => overlay.style.display = 'none', 300);
+    
+    setupBoard();
+    
+    // 記憶フェーズ
+    skipBtn.style.display = "block";
+    if(timerId) clearTimeout(timerId);
+    
+    showToast(`正解順を表示中`, 2000);
+
+    const finishMemorize = () => {
+      if(timerId) clearTimeout(timerId);
+      timerId = null;
+      board.classList.add("hidden");
+      skipBtn.style.display = "none";
+      isLocked = false;
+      pulse(15); 
+      showToast("開始！", 800);
+    };
+
+    skipBtn.onclick = (e) => {
+        e.stopPropagation();
+        pulse(10);
+        finishMemorize();
+        showToast("早食いボーナス（心の加点）", 1000);
+    };
+
+    timerId = setTimeout(finishMemorize, MEMO_MS);
+  }
+
+  document.getElementById("startBtn").onclick = () => startGame("HARD");
+  document.getElementById("practiceBtn").onclick = () => startGame("PRACTICE");
+
+  document.body.addEventListener('touchmove', function(e) {
+      if (e.target.closest('.board')) {
+          e.preventDefault();
+      }
+  }, { passive: false });
+
+})();
+</script>
+</body>
+</html>
