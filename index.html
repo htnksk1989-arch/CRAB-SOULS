@@ -389,7 +389,7 @@
         </div>
         <div class="stat">
           <div class="card">
-            <div class="label">まぐれ (Clear)</div>
+            <div class="label">撃破数 (Clear)</div>
             <div class="value" id="streak">0</div>
           </div>
           <div class="card">
@@ -472,9 +472,9 @@
 
   // ====== Messages ======
   const msg = {
-    success: ["せいぜい頑張れ。", "運がいいだけだ。", "調子に乗るなよ。"],
-    fail: ["どしたん？", "スクショする？", "カニに敬意払ってる？"],
-    clear: ["…で？", "運がいいんだね", "次のカニが待っている(笑)"]
+    success: ["	…ほう、侮れぬものだな", "その意志はよい、だが、達せられるべきではないのだよ", "不遜であろう"],
+    fail: ["おやおやおや‥", "知り得たか？カニの刃の切れ味を", "愚かな野心は忘れることだな"],
+    clear: ["Victory Achieved", "You Defeated", "Great Enemy Felled"]
   };
 
   // ====== Functions ======
@@ -536,7 +536,7 @@
 
     resultContent.innerHTML = `
         <h2>YOU DIED</h2>
-        <p>5回も負けたのか？もはや才能だ。<br>こんなゲームで死ぬなよ。</p>
+        <p>愚かな野心は忘れることだな</p>
         <button class="overlay-back-btn" style="background:#8a0b0b; color:#fff; border:1px solid #ff4d4d;" onclick="resetToTitle()">タイトルへ戻る</button>
     `;
   }
@@ -556,9 +556,8 @@
     resultContent.style.display = 'block';
     resultContent.innerHTML = `
         <h2>CONTRACT FULFILLED</h2>
-        <p>契約完了。貴様の勝ちだ。<br>
-           よくぞここまで耐え抜いた。</p>
-        <p style="font-size:12px; color:var(--accent);">報酬を受け取り、即刻立ち去れ。</p>
+        <p>…貴公、その力…甲殻類の、器か…</p>
+        <p style="font-size:12px; color:var(--accent);">すみません、カニは敗れました…</p>
         
         <a href="victory.png" download="victory_reward.png" class="btn reward">
            🎁 報酬画像 (Download)
